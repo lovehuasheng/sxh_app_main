@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>接口测试页面</title>
+        <!-- zui -->
+    <link rel="stylesheet" href="//cdn.bootcss.com/zui/1.5.0/css/zui.min.css">
+
+<!-- ZUI Javascript 依赖 jQuery -->
+<script src="//cdn.bootcss.com/zui/1.5.0/lib/jquery/jquery.js"></script>
+<!-- ZUI 标准版压缩后的 JavaScript 文件 -->
+<script src="//cdn.bootcss.com/zui/1.5.0/js/zui.min.js"></script>
+<script src="http://passport.cnblogs.com/scripts/jsencrypt.min.js"></script>
+  </head>
+  <body class="contain-fluid">
+    <nav class="bg-default" style="margin-top:0px;padding-top:20px;padding-bottom:20px;padding-left:20px;"><h2>当前内部版本号:1</h2></nav>
+	<div class="row">
+		<div class="col-md-3">
+			<h3 style="margin:10px">接口列表</h3>
+			<ul class="tree tree-lines" style="margin:10px" data-animate="true">
+			</ul>
+		</div>
+		<div class="col-md-5">
+			<ul class="list-group" style="margin-top:10px" id="query_1">
+				<li class="list-group-item" id="i_name">接口名称: 请从左侧菜单选择</li>
+				<li class="list-group-item" id="i_desc">接口描述: 暂无</li>
+				<li class="list-group-item">系统参数a: <input type="text" flag="sys" name="a" id="t_a" readonly value=""> 请求接口名</li>
+				<li class="list-group-item">系统参数b: <input type="text" flag="sys" name="b" value="test#123"> 设备编号</li>
+				<li class="list-group-item">系统参数k: <input type="text" flag="sys" name="k" value="app_poly" readonly> 系统身份标识</li>
+				<li class="list-group-item">系统参数s: <input type="text" flag="sys" name="s" value="" id="token"> 有效token <button class="btn btn-primary" id="bt_token">获取最近系统返回token</button></li>
+				<li class="list-group-item">系统参数v: <input type="text" flag="sys" name="v" value="1" readonly> 请求版本号</li>
+				<li class="list-group-item">系统参数f: <input type="text" flag="sys" name="f" value="" id="nonce"> 加密秘钥 <button class="btn btn-primary" id="bt_nonce">随机生成</button></li>
+				<li class="list-group-item">系统参数t: <input type="text" flag="sys" name="t" value="" id="ctime"> 请求时间 <button class="btn btn-primary" id="bt_ctime">生成当前时间戳</button></li>
+			</ul>
+			<ul class="list-group" id="query_2">
+			</ul>
+			<button id="sbt" class="btn btn-info">测试接口</button>
+		</div>
+		<div class="col-md-4">
+			<h4>校验码 <small id="sign_label"></small></h4>
+			<hr/>
+			系统返回结果
+			<textarea id="result" class="input" style="width:90%;height:200px;">
+			</textarea>
+		</div>
+	</div>
+	
+  </body>
+
+</html>
+<script type="text/html" id="tmp">
+	<li class="list-group-item">{label}: <input type="text" flag="user" name="{name}" value="{value}"> </li>
+</script>
+<script>
+window._pre_token="";
+$(document).ready(function(){
+	$.ajax({
+		url:'/app/index/test_get_action',
+		success:function(data){
+			$(".tree").tree({
+				data:data
+			});
+		}
+	});
+	$("body").on("click","[flag='action_node']",function(){
+		var a=$(this).attr('a');
+		$.ajax({
+			url:'/app/index/get_action_info',
+			data:{a:a},
+			success:function(data){
+				$("#i_name").html("接口名称:"+data.title).attr("act",data.a);
+				$("#i_desc").html("接口描述:"+data.desc);
+				$("#t_a").val(data.a);
+				$("#query_2").empty();
+				data.cfg=data.cfg.replace('config:','');
+				data.cfg=$.trim(data.cfg);
+				var f=data.cfg.split(/\s+/);
+				$.each(f,function(i,o){
+					var t=o.split("|");
+					var p={label:t[3],name:t[0],value:t[2]};
+					$("#query_2").append($("#tmp").html().replace(/\{([^\}]+)\}/g,function(a,b){if(p[b]==undefined)return '';return p[b];}));
+				});
+			}
+		});
+	});
+        var encrypt = new JSEncrypt();
+        var public_key = '-----BEGIN PUBLIC KEY-----MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCvLSDII/m0La8yRolTzMZyoXRQ4CHgEZOhzpsfnWBlzF5eDXHiHlCQ8GgdJ6AMb0STFUQYU08XglexyZh0IlUSpCbQJ7IFb7SRk7JoKSDw6gKb/xxOiHx2bcfpLHjLRcNcWiLeV6bevoQlD/eLRmbybhlLeDtKLfpizQsftAjXaQIDAQAB-----END PUBLIC KEY-----';
+        
+	$("#sbt").on("click",function(){
+		var param={};
+		$("[flag='sys']").each(function(i,o){
+			param[$(o).attr('name')]=$(o).val();
+		});
+		$("[flag='user']").each(function(i,o){
+                        if($(o).attr('name')=='password' || $(o).attr('name')=='confirm_password'){
+                            encrypt.setPublicKey(public_key);
+                            param[$(o).attr('name')]=encrypt.encrypt($(o).val());
+                        }else{
+                            param[$(o).attr('name')]=$(o).val();
+                        }
+			
+		});
+		//第一步获取p
+		$.ajax({
+			url:'/app/index/get_p',
+			data:param,
+			type:'post',
+			async:false,
+			context:{ctx:param},
+			success:function(data){
+				var sign=data.sign;
+				this.ctx.p=sign;
+				$("#sign_label").html(sign);
+				$.ajax({
+					url:'/app',
+					data:this.ctx,
+					type:'post',
+					success:function(data){
+						$("#result").val(JSON.stringify(data));
+						window._pre_token=data.token;
+					}
+				});
+			}
+		});
+	});
+	$("#bt_nonce").on("click",function(){
+		$("#nonce").val((Math.random()+'').replace(".",""));
+	});
+	$("#bt_ctime").on("click",function(){
+		$("#ctime").val((Date.now()+"").substr(0,10));
+	});
+	$("#bt_token").on("click",function(){
+		$("#token").val(window._pre_token);
+	});
+});
+</script>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>因缘图</title>
+    <!-- zui -->
+    <link rel="stylesheet" href="//cdn.bootcss.com/zui/1.5.0/css/zui.min.css">
+
+<!-- ZUI Javascript 依赖 jQuery -->
+<script src="//cdn.bootcss.com/zui/1.5.0/lib/jquery/jquery.js"></script>
+<!-- ZUI 标准版压缩后的 JavaScript 文件 -->
+<script src="//cdn.bootcss.com/zui/1.5.0/js/zui.min.js"></script>
+<style>
+
+.node circle {
+  fill: #999;
+}
+
+.node text {
+  font: 10px sans-serif;
+}
+
+.node--internal circle {
+  fill: #555;
+}
+
+.node--internal text {
+  text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff;
+}
+
+.link {
+  fill: none;
+  stroke: #555;
+  stroke-opacity: 0.4;
+  stroke-width: 1.5px;
+}
+</style>
+</head>
+<body>
+	<header>
+		<nav class="navbar navbar-default navbar-fixed-top text-special" role="navigation" style="background:#03B8CF;padding-top:5px;padding-bottom:5px;">
+			<div class="container">
+				<!-- 导航头部 -->
+				<div class="navbar-header">
+				
+				</div>
+				<!-- 导航项目 -->
+				<div class="collapse navbar-collapse navbar-collapse-example">
+					<ul class="nav navbar-nav">
+						<li><h2 style="margin-top:0px;margin-bottom:0px"><img src="http://img01.shanxinhui.com.cn/guadan/static/index/images/LOGO.png?2017-02-13-01" height="40" style="margin-right:15px">因缘图</h2></li>
+						
+					</ul>
+					<!-- 右侧的导航项目 -->
+					<ul class="nav navbar-nav navbar-right text-special">
+						<li><a href="#"><strong>用户[ ID:1 ]</strong></a></li>
+						<li><a href="#"><strong>退出登录</strong></a></li>
+					</ul>
+				</div><!-- END .navbar-collapse -->
+			</div>
+		</nav>
+	</header>
+	<section class="container">
+	<ol class="breadcrumb" style="margin-top:50px">
+	  <li><a href="your/url/">首页</a></li>
+	  <li><a href="your/url/">因缘图</a></li>
+	  <li class="active">团队统计</li>
+	</ol>
+	</section>
+	<section class="container">
+		<table class="table table-striped table-hover table-bordered  text-center" id="report">
+			<tr>
+				<td></td>
+				<td>注册人数</td>				
+				<td>激活人数</td>
+				<td>A轮个数</td>
+				<td>B轮个数</td>
+				<td>功德主个数</td>
+			</tr>
+			
+		</table>
+	</section>
+	
+</body>
+</html>
+<script src="__ROOT__/relation/static/js/comm.js"></script>
+<script src="__ROOT__/relation/static/js/relation_score.js"></script>
+<script type="text/html" id="temp">
+		<tr>
+				<td>{label}</td>
+				<td>{total}</td>				
+				<td>{status}</td>
+				<td>{a}</td>
+				<td>{b}</td>
+				<td>{c}</td>
+			</tr>
+</script>

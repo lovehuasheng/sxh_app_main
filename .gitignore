@@ -1,0 +1,6 @@
+/nbproject/private/
+/vendor/
+/nbproject
+/application/config.php
+/application/database.php
+/runtime/*
